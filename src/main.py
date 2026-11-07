@@ -145,12 +145,14 @@ def main():
     max_score, min_score = calc_max_min(students)
     passed = count_passed(students)
 
-    # 4. 查询（写死一个学号当示例，以后可以改成 input()）
-    target = find_by_id(students, "2026003")
+    # 4. 查询
+
+    query_id = input("请输入你想要查询的学号:")
+    target = find_by_id(students, query_id)
     if target:
-        query_line = f"学号 2026003: {target['name']}，成绩 {target['score']}"
+        query_line = f"学号 {query_id}: {target['name']}，成绩 {target['score']}"
     else:
-        query_line = "学号 2026003: 未找到"
+        query_line = f"学号 {query_id}: 未找到"
 
     # 5. 组装结果文本
     result = f"""学生总数: {len(students)}
