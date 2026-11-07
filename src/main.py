@@ -13,59 +13,34 @@ OUTPUT_DIR = BASE_DIR / "output"
 
 
 def load_students(path: Path):
-    """读取 JSON 文件，返回学生列表
-    需要处理三种异常：
-      1. 文件不存在 (FileNotFoundError)
-      2. JSON 格式错误 (json.JSONDecodeError)
-      3. 文件是空的
-    返回：学生列表；如果出错返回 None
-    """
-    # TODO: 实现这个函数
-    # 提示：
-    # 1. if not path.exists(): 打印错误，return None
-    # 2. with open(path, "r", encoding="utf-8") as f:
-    #      students = json.load(f)
-    # 3. 用 try/except 包住，打印具体错误信息
-
     if not path.exists():
-        print(f'wrong,the text is not exist - {path}')
+        print(f"错误：文件不存在 - {path}")
         return None
-    else:
-        try:
-           with open(path, "r", encoding="utf-8") as f:
-               students = json.load(f)
-               return students
-        except FileNotFoundError:
-            print('can\'t find the text')
-            return None
-        except json.JSONDecodeError:
-            print('json error')
-            return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            students = json.load(f)
+        return students
+    except json.JSONDecodeError:
+        print(f"错误：JSON 格式不正确 - {path}")
+        return None
 
 
 
 def validate_students(students):
-    """校验每个学生是否有 id、name、score 三个字段，且 score 是数字
-    返回：(合法学生列表, 错误信息列表)
-    """
     valid = []
     errors = []
     for i,s in enumerate(students):
-        # TODO: 检查 s 里有没有 "id"、"name"、"score"
-        # 如果缺字段，往 errors 里加一条说明
-        # 如果 score 不是数字（int/float），也记为错误
-        # 合法的才 append 到 valid
         if "id" not in s:
-            errors.append(f"the {i+1} lack id")
+            errors.append(f"第 {i+1} 个学生缺少 id 字段")
             continue
         if "name" not in s:
-            errors.append(f"student{s['id']} lack name")
+            errors.append(f"学生 {s['id']} 缺少 name 字段")
             continue
         if "score" not in s:
-            errors.append(f"student{s['id']} lack score")
+            errors.append(f"学生 {s['id']} 缺少 score 字段")
             continue
-        if not isinstance(s["score"], (int,float)):
-            errors.append(f'student{s["id"]} score is not int or float')
+        if not isinstance(s["score"], (int, float)):
+            errors.append(f"学生 {s['id']} 的 score 不是数字：{s['score']}")
             continue
 
         valid.append(s)
@@ -73,8 +48,6 @@ def validate_students(students):
 
 
 def calc_average(students):
-    """计算平均分，保留一位小数"""
-    # TODO: 平均分 = 总分 / 人数
     total = 0
     for s in students:
         total += s["score"]
@@ -83,16 +56,12 @@ def calc_average(students):
 
 
 def calc_max_min(students):
-    """返回 (最高分, 最低分)"""
-    # TODO: 用 max() 和 min()，key=lambda s: s["score"]
     mx = max(students,key=lambda s: s["score"])
     mn = min(students,key=lambda s: s["score"])
     return mx, mn
 
 
 def count_passed(students):
-    """统计及格人数（score >= 60）"""
-    # TODO
     passed = 0
     for s in students:
         if s["score"] >= 60:
@@ -101,8 +70,6 @@ def count_passed(students):
 
 
 def find_by_id(students, student_id: str):
-    """根据学号查找学生，找不到返回 None"""
-    # TODO: 遍历比较 s["id"] == student_id
     for s in students:
         if s["id"] == student_id:
             return s
@@ -110,11 +77,6 @@ def find_by_id(students, student_id: str):
 
 
 def save_result(content: str, path: Path):
-    """把结果写入文件，自动创建 output 目录"""
-    # TODO:
-    # path.parent.mkdir(parents=True, exist_ok=True)
-    # with open(path, "w", encoding="utf-8") as f:
-    #     f.write(content)
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
@@ -123,13 +85,11 @@ def save_result(content: str, path: Path):
 def main():
     print("=== 学生信息统计工具 ===")
 
-    # 1. 读取数据
     students = load_students(DATA_FILE)
     if students is None:
         print("读取数据失败，程序退出。")
         return
 
-    # 2. 校验数据
     students, errors = validate_students(students)
     if errors:
         print("数据校验警告：")
